@@ -1,0 +1,18 @@
+FROM leonismoe/frpc
+
+COPY dependents/frpc.ini /etc/frpc.ini
+
+ARG FRP_SERVER_ADDR
+ARG FRP_SERVER_PORT
+ARG FRP_TOKEN
+
+RUN echo '#!/bin/sh' > /etc/start.sh \
+    && echo export FRP_SERVER_ADDR="${FRP_SERVER_ADDR:-0.0.0.0}" >> /etc/start.sh \
+    && echo export FRP_SERVER_PORT="${FRP_SERVER_PORT:-443}" >> /etc/start.sh \
+    && echo export FRP_TOKEN="`echo ${FRP_TOKEN}basefrptoken | md5sum | awk '{print $1}'`" >> /etc/start.sh \
+    && echo /frpc -c /etc/frpc.ini >> /etc/start.sh \
+    && chmod +x /etc/start.sh
+
+#host.docker.internal
+
+CMD ["/etc/start.sh"]
