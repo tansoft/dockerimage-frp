@@ -1,0 +1,11 @@
+FROM alpine:latest
+
+ARG FRP_VERSION=0.25.1
+WORKDIR /var/tmp
+RUN set -x && wget https://github.com/fatedier/frp/releases/download/v${FRP_VERSION}/frp_${FRP_VERSION}_linux_amd64.tar.gz \
+    && tar -zxvf frp_${FRP_VERSION}_linux_amd64.tar.gz \
+    && cp frp_${FRP_VERSION}_linux_amd64/frps /usr/bin/frps && rm -rf /var/tmp/* && mkdir -p /etc/frps \
+    && cp frp_${FRP_VERSION}_linux_amd64/frps.ini /etc/frps && cp frp_${FRP_VERSION}_linux_amd64/frps_full.ini /etc/frps
+
+WORKDIR /etc/frps
+CMD ["/usr/bin/frps", "-c", "/etc/frps/frps.ini"]
