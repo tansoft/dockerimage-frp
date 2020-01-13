@@ -19,6 +19,8 @@ frpc     frps        ^
 git clone https://github.com/tansoft/dockerimage-frp.git
 
 docker build -t frpmap -f Dockerfile.server . --build-arg FRP_TOKEN=<password>
+
+运行 start-server.sh
 ```
 
 ### 其中可选参数如下
