@@ -65,7 +65,6 @@ function curl_get($url, $params = array(), $retjson = true, $headers = array()) 
     $mtime = microtime(true);
     //执行命令
     $data = curl_exec($curl);
-    var_dump($data);
     //关闭URL请求
     curl_close($curl);
 
@@ -73,6 +72,25 @@ function curl_get($url, $params = array(), $retjson = true, $headers = array()) 
         return json_decode($data, true);
     }
     return $data;
+}
+
+function save_conversion($value) {
+    if ($value === false) {
+        return 'false';
+    }
+    return $value;
+}
+
+function iniar_to_string($ar) {
+    $out = '';
+    foreach($ar as $section => $values) {
+        $out .= '['.$section."]\n";
+        foreach($values as $key=>$value) {
+            $out .= $key.'='.save_conversion($value)."\n";
+        }
+        $out .= "\n";
+    }
+    return $out;
 }
 
 $baseapi = 'http://'.FRP_SERVER_ADDR.':'.FRP_SERVER_PORT.'/api/';
@@ -96,42 +114,35 @@ $cliconfig = curl_get($baseapi.'config', array(), false, $cliheader);
 $configar = parse_ini_string($config, true);
 $cliconfigar = parse_ini_string($cliconfig, true);
 
-var_dump($configar);
-var_dump($cliconfigar);
-die('');
-
-$isok = true;
-//查找配置中的服务，是否都在运行中
-foreach($localar as $section => $info) {
-    if ($section == 'common') continue;
-    $found = false;
-    foreach($status[$info['type']] as $idx=>$listen) {
-        if ($listen['name'] == $section) {
-            $found = true;
-            break;
-        }
-    }
-    if (!$found) {
-        echo('service '.$section.' not found!'."\n");
-        $isok = false;
-    } else {
-        echo('service '.$section.' is ok!'."\n");
-    }
+foreach($configar as $section => $info) {
+    if ($section == 'common' || substr($section, 0, 8) == 'adminweb') continue;
+    unset($configar[$section]);
 }
-//force reload
-if ($argc >= 2 && $argv[1] == 'reload') $isok = false;
-if ($isok && $config == $localinit) {
-    die('all thing is ok'."\n");
+foreach($cliconfigar as $section => $info) {
+    if ($section == 'common' || substr($section, 0, 8) == 'adminweb') continue;
+    unset($cliconfigar[$section]);
 }
-
-if (!$isok) {
-    echo('try to elevate permissions...'."\n");
-    curl_post($baseapi.'config', $local, false, $header, false, false, 'PUT');
+if (empty($mappings)) {
+    die('need $mappings');
+}
+foreach($mappings as $idx => $mapping) {
+    $key = 'mapping_'.$idx;
+    $sk = md5(implode('.',$mapping));
+    $configar[$key] = ['type'=>'xtcp', 'sk'=>$sk, 'local_ip'=>$mapping[0], 'local_port'=>$mapping[1]];
+    $cliconfigar[$key.'_visitor'] = ['type'=>'xtcp',
+        'role'=>'visitor', 'server_name'=>$key,
+        'sk'=>$sk, 'bind_addr'=>'127.0.0.1', 'bind_port'=>$mapping[2]];
+}
+$newconfig = iniar_to_string($configar);
+$clinewconfig = iniar_to_string($cliconfigar);
+if ($newconfig != $config || $clinewconfig != $cliconfig) {
+    echo("need update!\n");
+    curl_post($baseapi.'config', $newconfig, false, $header, false, false, 'PUT');
     curl_get($baseapi.'reload', array(), false, $header);
+    curl_post($baseapi.'config', $clinewconfig, false, $cliheader, false, false, 'PUT');
+    curl_get($baseapi.'reload', array(), false, $cliheader);
+} else {
+    echo("all thing is ok\n");
 }
-if (!$isok || $config != $localinit) {
-    echo('hidden configure file...'."\n");
-    curl_post($baseapi.'config', $localinit, false, $header, false, false, 'PUT');
-}
-
-echo('please recheck'."\n");
+echo($newconfig);
+echo($clinewconfig);

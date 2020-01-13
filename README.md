@@ -49,7 +49,10 @@ define('FRP_SERVER_PORT','443');
 
 ``` bash
 #在config.php 里修改需要的端口映射，然后运行
-#$mapping = [['hostname',hostport,localport],['hostname',hostport,localport]]
+#$mappings = [
+#     ['hostname',hostport,localport],
+#     ['hostname',hostport,localport],
+#];
 php frpctrl.php
 
 # hostname port localport
