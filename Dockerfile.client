@@ -16,7 +16,7 @@ RUN echo '#!/bin/sh' > /etc/start.sh \
     && echo export FRP_SERVER_PORT="${FRP_SERVER_PORT:-443}" >> /etc/start.sh \
     && echo export FRP_TOKEN="`echo ${FRP_TOKEN}basefrptoken | md5sum | awk '{print $1}'`" >> /etc/start.sh \
     && echo export FRP_ADMIN_NAME="`echo ${FRP_TOKEN}clientadminname | md5sum | awk '{print $1}'`" >> /etc/start.sh \
-    && echo export FRP_ADMIN_PORT="${FRP_ADMIN_PORT:-7400}" >> /etc/start.sh \
+    && echo export FRP_ADMIN_PORT="${FRP_ADMIN_PORT:-7500}" >> /etc/start.sh \
     && echo export FRP_ADMIN_TOKEN="`echo ${FRP_TOKEN}clientadmintoken | md5sum | awk '{print $1}'`" >> /etc/start.sh \
     && echo "/frpc -c /etc/frpc.ini " >> /etc/start.sh \
     && chmod +x /etc/start.sh

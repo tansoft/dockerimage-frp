@@ -48,9 +48,9 @@ define('FRP_SERVER_PORT','443');
 ## 客户端管理程序
 
 ``` bash
-#配置frpctrl.php 里的定义
-#列出目前映射关系
-php frpctrl.php 
+#在config.php 里修改需要的端口映射，然后运行
+#$mapping = [['hostname',hostport,localport],['hostname',hostport,localport]]
+php frpctrl.php
 
 # hostname port localport
 ```

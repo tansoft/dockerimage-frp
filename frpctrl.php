@@ -1,9 +1,11 @@
 <?php
 
-require_once config.php
+require_once('config.php');
 
 define('FRP_ADMIN_NAME', md5(FRP_TOKEN."baseadminname\n"));
 define('FRP_ADMIN_TOKEN', md5(FRP_TOKEN."baseadmintoken\n"));
+define('FRP_CLIENT_NAME', md5(FRP_TOKEN."clientadminname\n"));
+define('FRP_CLIENT_TOKEN', md5(FRP_TOKEN."clientadmintoken\n"));
 define('FRP_TOKEN_MD5',md5(FRP_TOKEN."basefrptoken\n"));
 
 function curl_post($url, $postData, $ispostjson = false, $headers = array(), $retjson = true, $retheader = false, $customheader = 'POST') {
@@ -80,17 +82,23 @@ $header = array(
     'Host: '.FRP_ADMIN_NAME.'.domain.admin',
 );
 
-$status = curl_get($baseapi.'status', array(), true, $header);
+$cliheader = array(
+    'Authorization: Basic '.base64_encode(FRP_CLIENT_NAME.':'.FRP_CLIENT_TOKEN),
+    'Host: '.FRP_CLIENT_NAME.'.domain.admin',
+);
+
+//$status = curl_get($baseapi.'status', array(), true, $header);
 $config = curl_get($baseapi.'config', array(), false, $header);
 
-var_dump($status);
+//$clistatus = curl_get($baseapi.'status', array(), true, $cliheader);
+$cliconfig = curl_get($baseapi.'config', array(), false, $cliheader);
 
+$configar = parse_ini_string($config, true);
+$cliconfigar = parse_ini_string($cliconfig, true);
 
-var_dump($config);
-
+var_dump($configar);
+var_dump($cliconfigar);
 die('');
-
-$localar = parse_ini_string($local, true);
 
 $isok = true;
 //查找配置中的服务，是否都在运行中
