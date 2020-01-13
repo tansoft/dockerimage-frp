@@ -74,8 +74,8 @@ function curl_get($url, $params = array(), $retjson = true, $headers = array()) 
     return $data;
 }
 
-function save_conversion($value) {
-    if ($value === false) {
+function save_conversion($key, $value) {
+    if ($value === false || $key == 'login_fail_exit') {
         return 'false';
     }
     return $value;
@@ -86,7 +86,7 @@ function iniar_to_string($ar) {
     foreach($ar as $section => $values) {
         $out .= '['.$section."]\n";
         foreach($values as $key=>$value) {
-            $out .= $key.'='.save_conversion($value)."\n";
+            $out .= $key.'='.save_conversion($key, $value)."\n";
         }
         $out .= "\n";
     }
@@ -126,15 +126,15 @@ if (empty($mappings)) {
     die('need $mappings');
 }
 foreach($mappings as $idx => $mapping) {
-    $key = 'mapping_'.$idx;
     $sk = md5(implode('.',$mapping));
+    $key = 'map_'.$sk;
     $configar[$key] = ['type'=>'xtcp', 'sk'=>$sk, 'local_ip'=>$mapping[0], 'local_port'=>$mapping[1]];
     $cliconfigar[$key.'_visitor'] = ['type'=>'xtcp',
         'role'=>'visitor', 'server_name'=>$key,
         'sk'=>$sk, 'bind_addr'=>'127.0.0.1', 'bind_port'=>$mapping[2]];
 }
-$newconfig = iniar_to_string($configar);
-$clinewconfig = iniar_to_string($cliconfigar);
+$newconfig = "# frpc.ini\n".iniar_to_string($configar);
+$clinewconfig = "# frpc.ini\n".iniar_to_string($cliconfigar);
 if ($newconfig != $config || $clinewconfig != $cliconfig) {
     echo("need update!\n");
     curl_post($baseapi.'config', $newconfig, false, $header, false, false, 'PUT');
