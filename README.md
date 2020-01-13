@@ -19,25 +19,11 @@ frpc     frps        ^
 git clone https://github.com/tansoft/dockerimage-frp.git
 
 docker build -t frpmap -f Dockerfile.server . --build-arg FRP_TOKEN=<password>
+#其中还可以指定以下参数：
+#--build-arg FRP_SERVER_PORT=443 --build-arg FRP_SERVER_ADDR=0.0.0.0
 
 运行 start-server.sh
-```
-
-### 其中可选参数如下
-
-* FRP_TOKEN=abcdef          访问服务器的密码
-* FRP_SERVER_PORT=443       服务器公网端口
-* FRP_SERVER_ADDR=1.2.3.4   服务器公网地址，默认0.0.0.0，因此服务器上无需设置
-* FRP_ADMIN_NAME=           admin服务绑定的域名名称，通过token生成，一般无需修改
-* FRP_ADMIN_PORT=7400       admin服务监听端口（绑定在127网卡上），一般无需修改
-* FRP_ADMIN_TOKEN=fedcba    admin服务器的访问密码，通过token生成，一般无需修改
-
-## 客户端安装-frpc方式
-
-``` bash
-git clone https://github.com/tansoft/dockerimage-frp.git
-
-brew install frpc
+#如果FRP_SERVER_PORT修改了，请一并修改start-server.sh
 ```
 
 ## 客户端安装-docker方式
@@ -45,13 +31,28 @@ brew install frpc
 ``` bash
 git clone https://github.com/tansoft/dockerimage-frp.git
 
-docker build -t frpmap -f Dockerfile.client . --build-arg FRP_TOKEN=<password> --build-arg FRP_SERVER_ADDR=<12.3.4.4>
+docker build -t frpmapcli -f Dockerfile.client . --build-arg FRP_TOKEN=<password> --build-arg FRP_SERVER_ADDR=<12.3.4.4>
+#其中还可以指定以下参数：
+#--build-arg FRP_ADMIN_PORT=7500 --build-arg FRP_SERVER_PORT=443
+#7500 是本机上的管理端口
+
+运行 start-client.sh
+
+创建文件：config.php，配置token和服务器ip端口文件内容如下：
+<?php
+define('FRP_TOKEN','xxxx');
+define('FRP_SERVER_ADDR','x.x.x.x');
+define('FRP_SERVER_PORT','443');
 ```
 
-## 客户端添加映射
+## 客户端管理程序
 
 ``` bash
-php dependents/addmap.php hostname port localport
+#配置frpctrl.php 里的定义
+#列出目前映射关系
+php frpctrl.php 
+
+# hostname port localport
 ```
 
 http://host.docker.internal

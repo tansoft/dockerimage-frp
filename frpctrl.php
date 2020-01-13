@@ -90,9 +90,6 @@ var_dump($config);
 
 die('');
 
-$local = str_replace("token = bbe8e84ac9c9ee9c6fd61ef086a2c66e\n", '', file_get_contents(__DIR__.'/frpc.ini'));
-$localinit = str_replace("token = bbe8e84ac9c9ee9c6fd61ef086a2c66e\n", '', file_get_contents(__DIR__.'/frpc_init.ini'));
-
 $localar = parse_ini_string($local, true);
 
 $isok = true;
