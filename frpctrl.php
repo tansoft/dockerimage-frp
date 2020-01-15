@@ -1,6 +1,14 @@
 <?php
 
-require_once('config.php');
+define('FRP_TOKEN','[FRP_TOKEN]');
+define('FRP_SERVER_ADDR','[FRP_SERVER_ADDR]');
+define('FRP_SERVER_PORT','[FRP_SERVER_PORT]');
+
+$mappings = [
+	//serverip,serverport,localport
+	['10.21.0.88',6379,6379],
+	//['127.0.0.1',22,822],
+];
 
 define('FRP_ADMIN_NAME', md5(FRP_TOKEN."baseadminname\n"));
 define('FRP_ADMIN_TOKEN', md5(FRP_TOKEN."baseadmintoken\n"));
@@ -128,10 +136,10 @@ if (empty($mappings)) {
 foreach($mappings as $idx => $mapping) {
     $sk = md5(implode('.',$mapping));
     $key = 'map_'.$sk;
-    $configar[$key] = ['type'=>'xtcp', 'sk'=>$sk, 'local_ip'=>$mapping[0], 'local_port'=>$mapping[1]];
-    $cliconfigar[$key.'_visitor'] = ['type'=>'xtcp',
+    $configar[$key] = ['type'=>'stcp', 'sk'=>$sk, 'local_ip'=>$mapping[0], 'local_port'=>$mapping[1]];
+    $cliconfigar[$key.'_visitor'] = ['type'=>'stcp',
         'role'=>'visitor', 'server_name'=>$key,
-        'sk'=>$sk, 'bind_addr'=>'127.0.0.1', 'bind_port'=>$mapping[2]];
+        'sk'=>$sk, 'bind_addr'=>'0.0.0.0', 'bind_port'=>$mapping[2]];
 }
 $newconfig = "# frpc.ini\n".iniar_to_string($configar);
 $clinewconfig = "# frpc.ini\n".iniar_to_string($cliconfigar);
