@@ -1,2 +1,6 @@
 */.DS_Store
 .DS_Store
+start-client-mac.sh
+config.php
+frpc.ini
+nohup.out

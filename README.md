@@ -26,6 +26,19 @@ docker build -t frpmap -f Dockerfile.server . --build-arg FRP_TOKEN=<password>
 #如果FRP_SERVER_PORT修改了，请一并修改start-server.sh
 ```
 
+## 客户端安装-frpc方式
+由于mac docker没有实现host模式，https://windmt.com/2019/08/30/docker-for-mac-network/
+导致本机的frpc无法映射端口，https://www.jb51.net/article/127630.htm
+mac用户采用安装frpc客户端的方式进行服务
+
+``` bash
+git clone https://github.com/tansoft/dockerimage-frp.git
+
+./setup-client-mac.sh <password> <server_addr>
+
+运行 nohup ./start-client-mac.sh &
+```
+
 ## 客户端安装-docker方式
 
 ``` bash

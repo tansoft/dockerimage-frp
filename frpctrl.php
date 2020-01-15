@@ -1,14 +1,6 @@
 <?php
 
-define('FRP_TOKEN','[FRP_TOKEN]');
-define('FRP_SERVER_ADDR','[FRP_SERVER_ADDR]');
-define('FRP_SERVER_PORT','[FRP_SERVER_PORT]');
-
-$mappings = [
-	//serverip,serverport,localport
-	['10.21.0.88',6379,6379],
-	//['127.0.0.1',22,822],
-];
+require_once('config.php');
 
 define('FRP_ADMIN_NAME', md5(FRP_TOKEN."baseadminname\n"));
 define('FRP_ADMIN_TOKEN', md5(FRP_TOKEN."baseadmintoken\n"));
